@@ -1,37 +1,80 @@
-name: Auto commit
+name: Natural Auto Contribution
 
 on:
   workflow_dispatch:
 
-  push:
-    branches:
-      - main
-
   schedule:
-    - cron: "0 7,9,11,15 * * *" # Runs daily at 14:00, 16:00, 18:00, and 22:00 WIB
+    # Dijalankan sekali sehari (08:00 UTC = 15:00 WIB)
+    - cron: "0 8 * * *"
+
+permissions:
+  contents: write
 
 jobs:
-  auto_commit:
+  contribution:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Modify last update
+      - name: Configure Git
         run: |
-          date -u '+%Y-%m-%dT%H:%M:%SZ' > LAST_UPDATED
-
-      - name: Commit changes
-        run: |
-          git config --local user.email "sheva1257@gmail.com"
           git config --local user.name "AnandaSheva"
-          git add -A
+          git config --local user.email "sheva1257@gmail.com"
 
-          arr=(
+      - name: Randomize activity
+        shell: bash
+        run: |
+
+          # -----------------------------
+          # Random delay (0–6 jam)
+          # -----------------------------
+          DELAY=$(( RANDOM % 21600 ))
+          echo "Sleeping $DELAY seconds..."
+          sleep $DELAY
+
+          # -----------------------------
+          # Skip beberapa hari
+          # -----------------------------
+          weekday=$(date +%u)
+
+          case $weekday in
+            1) chance=95 ;; # Senin
+            2) chance=90 ;;
+            3) chance=85 ;;
+            4) chance=90 ;;
+            5) chance=70 ;;
+            6) chance=50 ;;
+            7) chance=35 ;; # Minggu
+          esac
+
+          roll=$(( RANDOM % 100 ))
+
+          if [ "$roll" -gt "$chance" ]; then
+            echo "No activity today."
+            exit 0
+          fi
+
+          mkdir -p logs
+
+          files=(
+            "logs/history.txt"
+            "logs/activity.txt"
+            "logs/status.txt"
+            "logs/notes.txt"
+            "logs/devlog.txt"
+          )
+
+          messages=(
+            "docs: update"
+            "fix: minor changes"
+            "style: formatting"
+            "build: refresh"
+            "refactor: cleanup"
+            "ci: update"
+            "chore: maintenance"
             "chore(bot): 🌅 menyulam arunika pada riwayat"
             "chore(bot): 🌌 menitip pendar di cakrawala sunyi"
             "chore(bot): 🪶 menatah aksara pada linimasa"
@@ -41,19 +84,36 @@ jobs:
             "chore(bot): 🪷 menumbuhkan asmaraloka pada halaman waktu"
             "chore(bot): 🔆 menyibak bianglala selepas rinai"
             "chore(bot): 🍃 menabur ancala pada langkah senyap"
-            "chore(bot): 🧭 menandai cakra manggilingan hari ini
-            "docs: update"
-            "fix: minor changes"
-            "refactor: cleanup"
-            "style: formatting"
-            "build: refresh"
-            "chore: maintenance"
-            "ci: update"
+            "chore(bot): 🧭 menandai cakra manggilingan hari ini"
           )
 
-          rand=$((RANDOM % ${#arr[@]}))
+          commits=$(( RANDOM % 5 + 1 ))
 
-          git commit -m "${arr[$rand]}"
+          echo "Today's commits: $commits"
 
-      - name: Push changes
-        run: git push
+          for ((i=1;i<=commits;i++))
+          do
+
+            file=${files[$RANDOM % ${#files[@]}]}
+
+            echo "$(date -u) | $(uuidgen)" >> "$file"
+
+            git add "$file"
+
+            if git diff --cached --quiet; then
+              continue
+            fi
+
+            msg=${messages[$RANDOM % ${#messages[@]}]}
+
+            git commit -m "$msg"
+
+            if [ "$i" -lt "$commits" ]; then
+              sleep $(( RANDOM % 180 + 30 ))
+            fi
+
+          done
+
+      - name: Push
+        run: |
+          git push
