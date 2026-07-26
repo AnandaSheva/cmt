@@ -27,8 +27,8 @@ jobs:
 
       - name: Commit changes
         run: |
-          git config --local user.email "anggakurnia712@gmail.com"
-          git config --local user.name "angkrnia"
+          git config --local user.email "sheva1257@gmail.com"
+          git config --local user.name "AnandaSheva"
           git add -A
 
           arr=(
