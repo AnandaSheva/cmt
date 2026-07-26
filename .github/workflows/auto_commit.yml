@@ -41,7 +41,14 @@ jobs:
             "chore(bot): 🪷 menumbuhkan asmaraloka pada halaman waktu"
             "chore(bot): 🔆 menyibak bianglala selepas rinai"
             "chore(bot): 🍃 menabur ancala pada langkah senyap"
-            "chore(bot): 🧭 menandai cakra manggilingan hari ini"
+            "chore(bot): 🧭 menandai cakra manggilingan hari ini
+            "docs: update"
+            "fix: minor changes"
+            "refactor: cleanup"
+            "style: formatting"
+            "build: refresh"
+            "chore: maintenance"
+            "ci: update"
           )
 
           rand=$((RANDOM % ${#arr[@]}))
