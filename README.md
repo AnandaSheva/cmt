@@ -1,4 +1,4 @@
-# Auto Commit
+#CMT
 
 Repositori kecil untuk menjalankan commit otomatis lewat GitHub Actions. Workflow akan memperbarui berkas `LAST_UPDATED`, membuat commit dengan pesan acak bernuansa bahasa Indonesia, lalu mendorong perubahan ke branch `main`.
 
